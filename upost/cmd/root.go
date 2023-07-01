@@ -34,8 +34,7 @@ var rootCmd = &cobra.Command{
 	Use:   "npost",
 	Short: "npost 一个生成hugo文章的工具",
 	Long: `npost 一个生成hugo文章的工具
---destination 指定目的位置
---post 指定文章名称`,
+new 生成一篇文章`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
