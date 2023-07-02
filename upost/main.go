@@ -29,7 +29,4 @@ import (
 func main() {
 	cmd.Execute()
 	defer global.L.Sync()
-	global.L.Info(
-		"success",
-	)
 }
