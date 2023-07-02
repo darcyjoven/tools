@@ -1,16 +1,21 @@
 package new
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"io/fs"
+	"npost/global"
 	"npost/structure"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 func check(project string) bool {
@@ -91,11 +96,14 @@ func setLanuage(project, dest, post string) (ok bool, err error) {
 		if err != nil {
 			return false, err
 		}
-		order := viper.GetBool("projects." + project + ".order")
 		// 变量解析
-		template, err = replaceTemp(template, title, project, dest, tags, order)
+		template, err = replaceTemp(template, title, project, dest, tags)
 		if err != nil {
 			return false, err
+		}
+		order := viper.GetBool("projects." + project + ".order")
+		if order {
+			template = getOrder(destination, template)
 		}
 		//插入资料
 		postTemplate[key] = structure.MarkDown{
@@ -170,7 +178,7 @@ func getTitle(post, key string, dir bool) (filename, title string, tags []string
 // dest docs/book1/section1
 // tags  {"tiptop","of","operation"}
 // order 是否同文件夹排序，会将weight设置为最后一位
-func replaceTemp(temp, title, project, dest string, tags []string, order bool) (template string, err error) {
+func replaceTemp(temp, title, project, dest string, tags []string) (template string, err error) {
 	// title
 	temp = strings.Replace(temp, "$title", title, 1)
 	// date&lastmod
@@ -192,10 +200,6 @@ func replaceTemp(temp, title, project, dest string, tags []string, order bool) (
 	temp = strings.Replace(temp, "$tags", t, 1)
 	temp = strings.Replace(temp, "$categories", t, 1)
 
-	if order {
-		getOrder(project, dest)
-	}
-
 	return temp, nil
 }
 
@@ -211,6 +215,69 @@ func capitalize(str string) string {
 }
 
 // 得到文件夹的最大序号
-func getOrder(project, dest string) int {
-	return 1
+func getOrder(dest, template string) (temp string) {
+	// 遍历dest，取得文章的最大weight
+	// 匹配dest文件夹下的md文件  和  dest下的文件夹/index.*.md
+	match1 := dest + string(os.PathSeparator) + "*.md"
+	match2 := dest + string(os.PathSeparator) + "*" + string(os.PathSeparator) + "index*.md"
+	order := 0
+	filepath.Walk(
+		dest,
+		func(path string, info fs.FileInfo, err error) error {
+			ok, _ := filepath.Match(match1, path)
+			ok2, _ := filepath.Match(match2, path)
+			if ok || ok2 {
+				o, err := getWeight(path)
+				if err != nil {
+					//继续而不退出
+					global.L.Warn(
+						"file open failed , skip this file",
+						zap.String("path", path),
+						zap.Error(err),
+					)
+					return nil
+				}
+				if o > order {
+					order = o
+				}
+			}
+			return err
+		})
+	template = strings.Replace(template, "$weight", strconv.Itoa(order+1), 1)
+	return template
+}
+
+// weight:
+func getWeight(path string) (order int, err error) {
+	weight := regexp.MustCompile("weight: *[0-9]*")
+
+	fi, err := os.Open(path)
+	if err != nil {
+		// 继续而不退出
+		// fmt.Printf("Error: %s\n", err)
+		// global.L.Warn(
+		// 	"file open failed",
+		// 	zap.String("path", path),
+		// 	zap.Error(err),
+		// )
+		return 0, err
+	}
+	defer fi.Close()
+	br := bufio.NewReader(fi)
+	for {
+		a, _, c := br.ReadLine()
+		if weight.Match(a) {
+			w := strings.ReplaceAll(string(a), "weight:", "")
+			w = strings.ReplaceAll(w, " ", "")
+			order, err = strconv.Atoi(w)
+			if err != nil {
+				return 0, err
+			}
+			return order, nil
+		}
+		if c == io.EOF {
+			break
+		}
+	}
+	return
 }

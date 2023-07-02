@@ -9,8 +9,6 @@ import (
 
 // 新建一篇文章
 func Exc(destination, post string) {
-	// 3. 依据destination创建文件/文件夹
-	// 4. 将模板中的变量解析并重写
 	// 1. 查看项目文件夹是否存在 blog/book
 	project, dest := splitDest(destination)
 	if project == "" || dest == "" {
@@ -27,6 +25,7 @@ func Exc(destination, post string) {
 		)
 	}
 	// 2. 查看项目下的模板是否能匹配上destination
+	// 3. 将模板中的变量解析并重写
 	_, err := setLanuage(project, dest, post)
 	if err != nil {
 		global.L.Error(
@@ -35,6 +34,7 @@ func Exc(destination, post string) {
 		)
 		return
 	}
+	// 4. 依据destination创建文件/文件夹
 }
 
 // splitDest 将destination解析为project和dest
