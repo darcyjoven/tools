@@ -49,6 +49,7 @@ func initViperDefault() {
 	languages["blog"] = structure.LanguageConfig{
 		Source:      "./blog",
 		LanguageDir: false,
+		Order:       true,
 		Languages: []structure.Languages{
 			{
 				Name:        "en",
@@ -65,6 +66,7 @@ func initViperDefault() {
 	languages["book"] = structure.LanguageConfig{
 		Source:      "./book",
 		LanguageDir: true,
+		Order:       false,
 		Languages: []structure.Languages{
 			{
 				Name:        "en",
@@ -79,5 +81,5 @@ func initViperDefault() {
 		},
 	}
 
-	viper.SetDefault("languages", languages)
+	viper.SetDefault("projects", languages)
 }

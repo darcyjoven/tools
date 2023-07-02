@@ -5,6 +5,7 @@ package structure
 type LanguageConfig struct {
 	Source      string // 资源目录
 	LanguageDir bool   // 多语言文件夹
+	Order       bool   // 排序否
 	Languages   []Languages
 }
 type Languages struct {
