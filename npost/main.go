@@ -28,5 +28,7 @@ import (
 
 func main() {
 	cmd.Execute()
-	defer global.L.Sync()
+	if global.L != nil {
+		defer global.L.Sync()
+	}
 }
