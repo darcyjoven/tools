@@ -46,10 +46,14 @@ func projectDir(project string) (path string) {
 // 设计多语言配置
 // dest docs/book/section
 // post tiptop is fun
-func setLanuage(project, dest, post string) (ok bool, err error) {
+func setLanuage(project, dest, post string) (postTemplate structure.PostTemplate, err error) {
 
-	postTemplate := make(structure.PostTemplate)
+	postTemplate = make(structure.PostTemplate)
 	temp := "projects." + project + "."
+
+	// post 去掉两边空格
+	post = strings.TrimLeft(post, " ")
+	post = strings.TrimRight(post, " ")
 
 	// 多语言是否是独立文件夹
 	languageDir := viper.GetBool(temp + "languagedir")
@@ -59,7 +63,7 @@ func setLanuage(project, dest, post string) (ok bool, err error) {
 	m := viper.Get("projects." + project + ".languages")
 	ps, ok := m.([]any)
 	if !ok {
-		return ok, fmt.Errorf("can get right config")
+		return nil, fmt.Errorf("can get right config")
 	}
 	for i := 0; i < len(ps); i++ {
 		temp := "projects." + project + ".languages." + strconv.Itoa(i) + "."
@@ -71,7 +75,7 @@ func setLanuage(project, dest, post string) (ok bool, err error) {
 		// 文章文件夹
 		destination := viper.GetString(temp + "destination")
 		if destination == "" {
-			return false, fmt.Errorf(
+			return nil, fmt.Errorf(
 				"can not get destination config of the project:%s language:%s",
 				project,
 				key,
@@ -80,7 +84,7 @@ func setLanuage(project, dest, post string) (ok bool, err error) {
 		destination = filepath.Join(destination, dest)
 		filename, title, tags, err := getTitle(post, key, languageDir)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		// dest1 := filepath.Join(project, dest)
 		// 模板文件夹
@@ -94,12 +98,12 @@ func setLanuage(project, dest, post string) (ok bool, err error) {
 		// desc docs/book1/section1
 		template, err = getTemplate(template, dest)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		// 变量解析
 		template, err = replaceTemp(template, title, project, dest, tags)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		order := viper.GetBool("projects." + project + ".order")
 		if order {
@@ -271,6 +275,7 @@ func getWeight(path string) (order int, err error) {
 			w = strings.ReplaceAll(w, " ", "")
 			order, err = strconv.Atoi(w)
 			if err != nil {
+				// 退出而不报错
 				return 0, err
 			}
 			return order, nil
