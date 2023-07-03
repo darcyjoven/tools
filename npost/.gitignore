@@ -1,0 +1,10 @@
+npost
+*.exe
+*.log
+**/*test.go
+*config*
+!*config*.go
+*ps1
+.vscode
+temp/**/*
+npost.yaml
