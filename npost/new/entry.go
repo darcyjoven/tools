@@ -26,7 +26,7 @@ func Exc(destination, post string) {
 	}
 	// 2. 查看项目下的模板是否能匹配上destination
 	// 3. 将模板中的变量解析并重写
-	_, err := setLanuage(project, dest, post)
+	genSource, err := setLanuage(project, dest, post)
 	if err != nil {
 		global.L.Error(
 			"set language falied",
@@ -35,6 +35,14 @@ func Exc(destination, post string) {
 		return
 	}
 	// 4. 依据destination创建文件/文件夹
+	err = generateMarkdown(genSource)
+	if err != nil {
+		global.L.Error(
+			"generate markdown file failed",
+			zap.Error(err),
+		)
+		return
+	}
 }
 
 // splitDest 将destination解析为project和dest
