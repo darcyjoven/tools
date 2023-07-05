@@ -44,6 +44,12 @@ func initViperDefault() {
 	viper.SetDefault("logname", "newpost") // 日志名称
 	viper.SetDefault("loginterval", "one") // 日志名称
 
+	// 标题中的忽略tags设置
+	viper.SetDefault("ignoretags", []string{
+		"is", "of", "call", "be", "do", "get", "and", "or", "a", "one", "two", "1", "2",
+		"with", "about", "in", "on", "at", "beside",
+		"by", "near", "behind", "between", "across",
+	})
 	// 多语言配置
 	languages := structure.LanguagesConfig{}
 	languages["blog"] = structure.LanguageConfig{

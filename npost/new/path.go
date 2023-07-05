@@ -163,6 +163,8 @@ func getTitle(post, key string, dir bool) (filename, title string, tags []string
 
 	tags = strings.Split(post, " ")
 	filename = strings.Join(tags, "-")
+	// tags 忽略
+	tags = ignoreTag(tags)
 	if dir {
 		// 多文件夹
 		filename = fmt.Sprintf("%s%sindex.md", filename, string(os.PathSeparator))
@@ -285,4 +287,18 @@ func getWeight(path string) (order int, err error) {
 		}
 	}
 	return
+}
+func ignoreTag(tags []string) []string {
+	t := []string{}
+	for _, v := range tags {
+		for _, v1 := range viper.GetStringSlice("ignoretags") {
+			if v == v1 {
+				goto noadd
+			}
+		}
+		t = append(t, v)
+	noadd:
+		continue
+	}
+	return t
 }
