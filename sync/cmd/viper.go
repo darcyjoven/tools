@@ -47,4 +47,14 @@ func initViperDefault() {
 	viper.SetDefault("logname", name)                       // 日志名称
 	viper.SetDefault("loginterval", "one")                  // 日志名称
 
+	viper.SetDefault("localdir", "D:/app/apbak/u1/topprod") // 本地目录，未匹配到不处理
+	viper.SetDefault("remotedir", "/u1/topprod")            // 远程目录
+	viper.SetDefault("diffupload", "info")                  // 上传前diff询问
+	viper.SetDefault("diffdownload", "warn")                // 下载前diff询问
+	viper.SetDefault("format", "060102")                    // 备份文件流水号
+	viper.SetDefault("author", "darcy")                     // 作者，会包括再备份文件后缀中
+	viper.SetDefault("tempdir", "D:/app/apbak/u1/tmp")      //临时文件夹
+	viper.SetDefault("remotestr", "tiptop@192.168.1.19")    //远程连接方式
+	viper.SetDefault("gitdir", "D:/app/apbak/u1")           //git homeDir
+	viper.SetDefault("gitdir", "")                          //提交comment
 }

@@ -19,17 +19,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package main
+package cmd
 
 import (
-	"sync/cmd"
-	"sync/global"
+	"sync/upload"
+
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	cmd.Execute()
-	if global.L != nil {
-		defer global.L.Sync()
+// uploadCmd represents the upload command
+var (
+	uploadCmd = &cobra.Command{
+		Use:   "up",
+		Short: "上传文件到远程主机",
+		Long:  `上传文件到远程主机`,
+		Run: func(cmd *cobra.Command, args []string) {
+			// fmt.Println("upload called")
+			upload.Exc(upFile)
+		},
 	}
+	upFile *string
+)
 
+func init() {
+	upFile = uploadCmd.Flags().StringP("file", "f", "", "需要上传文件对应的本地文件地址")
+	rootCmd.AddCommand(uploadCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// uploadCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// uploadCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
