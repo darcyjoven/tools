@@ -51,6 +51,7 @@ func Execute() {
 }
 
 func init() {
+	os.Setenv("TZ", "Asia/Shanghai")
 	cobra.OnInitialize(initConfig, initLogger)
 
 	// Here you will define your flags and configuration settings.

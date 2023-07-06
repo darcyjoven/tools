@@ -15,13 +15,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type constantClock time.Time
-
-func (c constantClock) Now() time.Time { return time.Time(c) }
-func (c constantClock) NewTicker(d time.Duration) *time.Ticker {
-	return &time.Ticker{}
-}
-
 func initLogger() {
 	rawJSON := []byte(`{
 		"level": "debug",
@@ -38,15 +31,10 @@ func initLogger() {
 	}
 	cfg.OutputPaths = append(cfg.OutputPaths, "stdout", file)
 	cfg.EncoderConfig = zap.NewProductionEncoderConfig()
-	cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("06-01-02 15:04:05.00")
+	cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("-07:00 06-01-02 15:04:05.00")
 	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 
-	local, _ := time.LoadLocation("Asia/Shanghai")
-	date := time.Now().In(local)
-	clock := constantClock(date)
-
 	global.L = zap.Must(cfg.Build(
-		zap.WithClock(clock),
 		zap.Fields(zap.Int("pid", os.Getpid())),
 	))
 }
