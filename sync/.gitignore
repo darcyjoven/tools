@@ -3,7 +3,6 @@ fast.exe
 *.log
 **/*test.go
 *config*
-*ps1
 .vscode
 temp/**/*
 sync.yaml
