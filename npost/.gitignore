@@ -4,7 +4,6 @@ npost
 **/*test.go
 *config*
 !*config*.go
-*ps1
 .vscode
 temp/**/*
 npost.yaml
