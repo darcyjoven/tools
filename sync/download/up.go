@@ -21,39 +21,38 @@ func Up(file string) (err error) {
 	}
 	// 3. 远程文件下载到tmp目录
 	err = down(getRemoteDir(file), getTempDir(file))
-	if err != nil {
-		return err
-	}
-	// 4. 本地文件是否与远程文件有差异
-	ok, err := diff(file, getTempDir(file))
-	if !ok {
-		// 无差异，退出
-		global.L.Warn(
-			"has no diff with remote file",
-			zap.String("file", file),
-		)
-		return nil
-	}
-	if err != nil {
-		return err
-	}
-	// 5. 远程文件备份（将temp file 上传到remote）
-	// todo: 检查是否已存在同名文件
-	ok = isBakExist(file)
-	if ok {
-		// 存在备份文件，不需要备份
-		global.L.Info(
-			"bakfile is exist,no bakup again",
-			zap.String("bakup file", file),
-		)
-	} else {
-		err = up(getRemoteBak(file), getTempDir(file))
+	if err == nil {
+		// 4. 本地文件是否与远程文件有差异
+		ok, err := diff(file, getTempDir(file))
+		if !ok {
+			// 无差异，退出
+			global.L.Warn(
+				"has no diff with remote file",
+				zap.String("file", file),
+			)
+			return nil
+		}
 		if err != nil {
 			return err
 		}
-		err = os.Remove(getTempDir(file))
-		if err != nil {
-			return err
+		// 5. 远程文件备份（将temp file 上传到remote）
+		// todo: 检查是否已存在同名文件
+		ok = isBakExist(file)
+		if ok {
+			// 存在备份文件，不需要备份
+			global.L.Info(
+				"bakfile is exist,no bakup again",
+				zap.String("bakup file", file),
+			)
+		} else {
+			err = up(getRemoteBak(file), getTempDir(file))
+			if err != nil {
+				return err
+			}
+			err = os.Remove(getTempDir(file))
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -72,7 +71,7 @@ func beforeUp(file string) (err error) {
 	if err != nil {
 		return err
 	}
-	level := viper.GetString("diffdownload")
+	level := viper.GetString("diffupload")
 	switch level {
 	case "warn":
 		var ct string
