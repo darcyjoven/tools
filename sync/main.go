@@ -31,5 +31,4 @@ func main() {
 	if global.L != nil {
 		defer global.L.Sync()
 	}
-
 }

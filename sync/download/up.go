@@ -49,12 +49,13 @@ func Up(file string) (err error) {
 			if err != nil {
 				return err
 			}
-			err = os.Remove(getTempDir(file))
-			if err != nil {
-				return err
-			}
 		}
+	} else {
+		return err
 	}
+	defer func() {
+		os.Remove(getTempDir(file))
+	}()
 
 	// 6. 本地文件上传到远程
 	return up(getRemoteDir(file), file)
