@@ -50,8 +50,6 @@ func Up(file string) (err error) {
 				return err
 			}
 		}
-	} else {
-		return err
 	}
 	defer func() {
 		os.Remove(getTempDir(file))
