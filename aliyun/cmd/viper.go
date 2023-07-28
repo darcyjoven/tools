@@ -46,4 +46,10 @@ func initViperDefault() {
 	viper.SetDefault("logdir", "./temp")                    // 日志目录
 	viper.SetDefault("logname", name)                       // 日志名称
 	viper.SetDefault("loginterval", "day")                  // 日志名称
+
+	viper.SetDefault("domain", "baidu.com")
+	viper.SetDefault("rr", "nas")
+	viper.SetDefault("accesskeyid", "xx")
+	viper.SetDefault("accesskeysecret", "xx")
+	viper.SetDefault("lastip", "192.168.x.x")
 }
